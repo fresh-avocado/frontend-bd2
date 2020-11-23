@@ -17,7 +17,7 @@
           </div>
           <div id="file-section" class="item">
                <h2>Archivo para Indexar</h2>
-               <input type="file" v-on:change="prepareToUploadFile($event.target.name, $event.target.files)">
+               <input type="file" name="file" v-on:change="prepareToUploadFile($event.target.name, $event.target.files)">
                <button v-on:click="uploadFile()">Index File</button>
                <p>File: {{ this.selectedFiles != null ? this.selectedFiles : 'No se ha seleccionado un archivo' }}</p>
                <div v-if="processingFile">
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 import filterTweetsMixin from '../mixins/filterTweetsMixin';
 
 export default {
@@ -284,24 +284,26 @@ export default {
                this.processingFile = true;
 
                // TODO: send multipart reuqest and set flag to false when response finished
-               // let formData = new FormData();
+               let formData = new FormData();
 
-               // formData.append('file', this.selectedFiles[0]);
+               formData.append('file', this.selectedFiles[0]);
 
-               // axios.post(
-               //      'url_alaraco',
-               //      formData,
-               //      {
-               //           headers: {
-               //                'Content-Type': 'multipart/form-data'
-               //           }
-               //      }
-               // ).then((response) => {
-               //      // TODO: if response was successful, then set flag to false and tell user
-               //      // file was uplaoded sucessfully
-               // }).catch((response) => {
-               //      console.log("error occurred when uploading a file");
-               // });
+               axios.post(
+                    'http://127.0.0.1:5000/uploadFile',
+                    formData,
+                    {
+                         headers: {
+                              'Content-Type': 'multipart/form-data',
+                              'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
+                         }
+                    }
+               ).then((response) => {
+                    // TODO: if response was successful, then set flag to false and tell user
+                    // file was uplaoded sucessfully
+                    console.log("UPLOAD FILE RESPONSE: " + response);
+               }).catch(() => {
+                    console.log("error occurred when uploading a file");
+               });
 
           },
           prepareToUploadFile(name, files) {
@@ -323,12 +325,21 @@ export default {
                this.processingQuery = true;
 
                // TODO: mandar le un url paremeter con el 'this.query'
-               // axios.get('url_alaraco').then( (response) => {
-               //      this.tweets = response.tweets;
-               //      this.processingQuery = false;
-               // }).catch((response) => {
-               //      console.log("error occurred when processing query");
-               // });
+               axios.get(
+                    `http://127.0.0.1:5000/queryTweets?query=${this.query}`,
+                    {
+                         headers: {
+                              'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
+                         }
+                    }
+                    ).then( (response) => {
+                    console.log("QUERY TWEETS RESPONSE:");
+                    console.log(response);
+                    this.tweets = response.tweets;
+                    this.processingQuery = false;
+               }).catch(() => {
+                    console.log("error occurred when processing query");
+               });
 
                // send query to server and process response
                this.query = 'Procesando query...';
