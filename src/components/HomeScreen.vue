@@ -279,7 +279,7 @@ export default {
           uploadFile() {
                // TODO: send file to server
                console.log(`NAME: ${this.selectedName}`);
-               console.log(`FILES: ${this.selectedFiles}`);
+               console.log(`FILES: ${this.selectedFiles[0]}`);
                // TODO: show "Loading..." while server is indexing file
                this.processingFile = true;
 
@@ -335,7 +335,7 @@ export default {
                     ).then( (response) => {
                     console.log("QUERY TWEETS RESPONSE:");
                     console.log(response);
-                    this.tweets = response.tweets;
+                    // this.tweets = response.tweets;
                     this.processingQuery = false;
                }).catch(() => {
                     console.log("error occurred when processing query");
